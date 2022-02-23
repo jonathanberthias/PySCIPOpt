@@ -4035,6 +4035,21 @@ cdef class Model:
         PY_SCIP_CALL(SCIPsolveDiveLP(self._scip, itlim, &lperror, &cutoff))
         return lperror, cutoff
 
+    def solveDiveAnalyticCenterLP(self, face=True):
+        """solves the LP of the current dive using barrier method without corssover to the the analytic center.
+        Can get the analytic center of the LP or that of the optimal face of the LP (depending on parameter face).
+        No separation or pricing is applied
+        :param face: whether the LP solution to the optimal face should be returned
+        """
+        cdef SCIP_SOL* _sol
+
+        PY_SCIP_CALL(SCIPsolveDiveAnalyticCenterLP(self._scip, &_sol, face))
+
+        sol = Solution.create(self._scip, _sol)
+
+        return sol
+
+
     def inRepropagation(self):
         """returns if the current node is already solved and only propagated again."""
         return SCIPinRepropagation(self._scip)

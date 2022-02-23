@@ -521,6 +521,7 @@ cdef extern from "scip/scip.h":
     SCIP_RETCODE SCIPchgRowLhsDive(SCIP* scip, SCIP_ROW* row, SCIP_Real newlhs)
     SCIP_RETCODE SCIPchgRowRhsDive(SCIP* scip, SCIP_ROW* row, SCIP_Real newrhs)
     SCIP_RETCODE SCIPaddRowDive(SCIP* scip, SCIP_ROW* row)
+    SCIP_RETCODE SCIPsolveDiveAnalyticCenterLP(SCIP* scip, SCIP_SOL** sol, SCIP_Bool face)
     SCIP_RETCODE SCIPendDive(SCIP* scip)
 
     # Probing methods
