@@ -2,7 +2,7 @@ PySCIPOpt
 =========
 
 This project provides an interface from Python to the [SCIP Optimization
-Suite](https://www.scipopt.org/).
+Suite](https://www.scipopt.org/). Please review [SCIP's license restrictions](https://scipopt.org/index.php#license) before installing PySCIPOpt.
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PySCIPOpt/Lobby)
 [![PySCIPOpt on PyPI](https://img.shields.io/pypi/v/pyscipopt.svg)](https://pypi.python.org/pypi/pyscipopt)
@@ -24,6 +24,8 @@ Installation
 
 [![Conda version](https://img.shields.io/conda/vn/conda-forge/pyscipopt?logo=conda-forge)](https://anaconda.org/conda-forge/pyscipopt)
 [![Conda platforms](https://img.shields.io/conda/pn/conda-forge/pyscipopt?logo=conda-forge)](https://anaconda.org/conda-forge/pyscipopt)
+
+***DO NOT USE THE CONDA BASE ENVIRONMENT TO INSTALL PYSCIPOPT.***
 
 Conda will install SCIP automatically, hence everything can be installed in a single command:
 ```bash

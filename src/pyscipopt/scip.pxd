@@ -1690,6 +1690,8 @@ cdef extern from "scip/cons_indicator.h":
                                      SCIP_VAR* var,
                                      SCIP_Real val)
 
+    SCIP_VAR* SCIPgetSlackVarIndicator(SCIP_CONS* cons)
+
 cdef extern from "scip/cons_countsols.h":
     SCIP_RETCODE SCIPcount(SCIP* scip)
     SCIP_RETCODE SCIPsetParamsCountsols(SCIP* scip)
@@ -1732,6 +1734,7 @@ cdef extern from "scip/pub_lp.h":
     int SCIProwGetAge(SCIP_ROW* row)
     SCIP_Bool SCIProwIsRemovable(SCIP_ROW* row)
     SCIP_ROWORIGINTYPE SCIProwGetOrigintype(SCIP_ROW* row)
+    SCIP_CONS* SCIProwGetOriginCons(SCIP_ROW* row)
 
     # Column Methods
     int SCIPcolGetLPPos(SCIP_COL* col)
@@ -1762,6 +1765,8 @@ cdef extern from "scip/scip_tree.h":
 
 cdef extern from "scip/scip_var.h":
     SCIP_RETCODE SCIPchgVarBranchPriority(SCIP* scip, SCIP_VAR* var, int branchpriority)
+
+    SCIP_RETCODE SCIPgetNegatedVar(SCIP* scip, SCIP_VAR* var, SCIP_VAR** negvar)
 
 cdef extern from "tpi/tpi.h":
     int SCIPtpiGetNumThreads()

@@ -3,6 +3,7 @@
 import weakref
 from os.path import abspath
 from os.path import splitext
+import os
 import sys
 import warnings
 
@@ -11,6 +12,7 @@ from cpython cimport Py_INCREF, Py_DECREF
 from cpython.pycapsule cimport PyCapsule_New, PyCapsule_IsValid, PyCapsule_GetPointer
 from libc.stdlib cimport malloc, free
 from libc.stdio cimport fdopen, fclose
+from posix.stdio cimport fileno
 
 from collections.abc import Iterable
 from itertools import repeat
@@ -28,6 +30,7 @@ include "presol.pxi"
 include "pricer.pxi"
 include "propagator.pxi"
 include "sepa.pxi"
+include "reader.pxi"
 include "relax.pxi"
 include "nodesel.pxi"
 
@@ -447,6 +450,11 @@ cdef class Row:
         """returns type of origin that created the row"""
         return SCIProwGetOrigintype(self.scip_row)
 
+    def getConsOriginConshdlrtype(self):
+        """returns type of constraint handler that created the row"""
+        cdef SCIP_CONS* scip_con = SCIProwGetOriginCons(self.scip_row)
+        return bytes(SCIPconshdlrGetName(SCIPconsGetHdlr(scip_con))).decode('UTF-8')
+
     def getNNonz(self):
         """get number of nonzero entries in row vector"""
         return SCIProwGetNNonz(self.scip_row)
@@ -570,7 +578,7 @@ cdef class Solution:
     def _checkStage(self, method):
         if method in ["SCIPgetSolVal", "getSolObjVal"]:
             if self.sol == NULL and not SCIPgetStage(self.scip) == SCIP_STAGE_SOLVING:
-                raise Warning(f"{method} cannot only be called in stage SOLVING without a valid solution (current stage: {SCIPgetStage(self.scip)})")
+                raise Warning(f"{method} can only be called in stage SOLVING with a valid solution (current stage: {SCIPgetStage(self.scip)})")
 
 
 cdef class BoundChange:
@@ -1263,15 +1271,17 @@ cdef class Model:
 
         if coeffs.degree() > 1:
             raise ValueError("Nonlinear objective functions are not supported!")
-        if coeffs[CONST] != 0.0:
-            self.addObjoffset(coeffs[CONST])
-
+        
         if clear:
             # clear existing objective function
+            self.addObjoffset(-self.getObjoffset())
             _vars = SCIPgetOrigVars(self._scip)
             _nvars = SCIPgetNOrigVars(self._scip)
             for i in range(_nvars):
                 PY_SCIP_CALL(SCIPchgVarObj(self._scip, _vars[i], 0.0))
+
+        if coeffs[CONST] != 0.0:
+            self.addObjoffset(coeffs[CONST])
 
         for term, coef in coeffs.terms.items():
             # avoid CONST term of Expr
@@ -1923,10 +1933,6 @@ cdef class Model:
     def getRowNumIntCols(self, Row row):
         """Returns number of intergal columns in the row"""
         return SCIPgetRowNumIntCols(self._scip, row.scip_row)
-
-    def rowGetNNonz(self, Row row):
-        """Gets number of non-zero etnries in the row"""
-        return PY_SCIP_CALL(SCIProwGetNNonz(row.scip_row))
 
     def getRowObjParallelism(self, Row row):
         """Returns 1 if the row is parallel, and 0 if orthogonal"""
@@ -2642,7 +2648,7 @@ cdef class Model:
         return pyCons
 
 
-    def addConsIndicator(self, cons, binvar=None, name="IndicatorCons",
+    def addConsIndicator(self, cons, binvar=None, activeone=True, name="IndicatorCons",
                 initial=True, separate=True, enforce=True, check=True,
                 propagate=True, local=False, dynamic=False,
                 removable=False, stickingatnode=False):
@@ -2653,6 +2659,7 @@ cdef class Model:
 
         :param cons: a linear inequality of the form "<="
         :param binvar: binary indicator variable, or None if it should be created (Default value = None)
+        :param activeone: constraint should active if binvar is 1 (0 if activeone = False)
         :param name: name of the constraint (Default value = "IndicatorCons")
         :param initial: should the LP relaxation of constraint be in the initial LP? (Default value = True)
         :param separate: should the constraint be separated during LP processing? (Default value = True)
@@ -2674,7 +2681,6 @@ cdef class Model:
         if cons.expr.degree() > 1:
             raise ValueError("expected linear inequality, expression has degree %d" % cons.expr.degree())
 
-
         if cons._rhs is not None:
             rhs =  cons._rhs
             negate = False
@@ -2682,7 +2688,12 @@ cdef class Model:
             rhs = -cons._lhs
             negate = True
 
-        _binVar = (<Variable>binvar).scip_var if binvar is not None else NULL
+        if binvar is not None:
+            _binVar = (<Variable>binvar).scip_var
+            if not activeone:
+                PY_SCIP_CALL(SCIPgetNegatedVar(self._scip, _binVar, &_binVar))
+        else:
+            _binVar = NULL
 
         PY_SCIP_CALL(SCIPcreateConsIndicator(self._scip, &scip_cons, str_conversion(name), _binVar, 0, NULL, NULL, rhs,
             initial, separate, enforce, check, propagate, local, dynamic, removable, stickingatnode))
@@ -2700,6 +2711,15 @@ cdef class Model:
         PY_SCIP_CALL(SCIPreleaseCons(self._scip, &scip_cons))
 
         return pyCons
+
+    def getSlackVarIndicator(self, Constraint cons):
+        """Get slack variable of an indicator constraint.
+
+        :param Constraint cons: indicator constraint
+
+        """
+        cdef SCIP_VAR* var = SCIPgetSlackVarIndicator(cons.scip_cons);
+        return Variable.create(var)
 
     def addPyCons(self, Constraint cons):
         """Adds a customly created cons.
@@ -3654,6 +3674,24 @@ cdef class Model:
         sepa.model = <Model>weakref.proxy(self)
         sepa.name = name
         Py_INCREF(sepa)
+
+    def includeReader(self, Reader reader, name, desc, ext):
+        """Include a reader
+
+        :param Reader reader: reader
+        :param name: name of reader
+        :param desc: description of reader
+        :param ext: file extension of reader
+
+        """
+        n = str_conversion(name)
+        d = str_conversion(desc)
+        e = str_conversion(ext)
+        PY_SCIP_CALL(SCIPincludeReader(self._scip, n, d, e, PyReaderCopy, PyReaderFree,
+                                          PyReaderRead, PyReaderWrite, <SCIP_READERDATA*>reader))
+        reader.model = <Model>weakref.proxy(self)
+        reader.name = name
+        Py_INCREF(reader)
 
     def includeProp(self, Prop prop, name, desc, presolpriority, presolmaxrounds,
                     proptiming, presoltiming=SCIP_PRESOLTIMING_FAST, priority=1, freq=1, delay=True):

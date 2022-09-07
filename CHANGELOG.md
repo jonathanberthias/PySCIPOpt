@@ -2,9 +2,59 @@
 
 ## Unreleased
 ### Added
+- Add SCIP function SCIprowGetOriginCons
+- Add getConsOriginConshdlrtype to Row
 ### Fixed
 ### Changed
 ### Removed
+- Removed function rowGetNNonz
+
+## 4.2.0 - 2022-03-21
+### Added
+- Interface to include custom reader plugins
+- New test for reader plugin
+### Fixed
+- revert change from #543 to fix #570 (closing file descriptors)
+- use correct offset value when updating the objective function
+### Changed
+### Removed
+
+## 4.1.0 - 2022-02-22
+### Added
+- Interface to include custom cut selector plugins
+- New test for cut selector plugin
+- Add SCIP function SCIPgetCutLPSolCutoffDistance and wrapper getCutLPSolCutoffDistance
+- Add SCIP function SCIPprintBestTransSol and wrapper writeBestTransSol
+- Add SCIP function SCIPprintTransSol and wrapper writeTransSol
+- Add SCIP function SCIPgetRowNumIntCols and wrapper getRowNumIntCols
+- Add SCIP function SCIProwGetNNonz and wrapper rowGetNNonz
+- Add SCIP function SCIPgetRowObjParallelism and wrapper getRowObjParallelism
+- Add SCIP function SCIPgetNSepaRounds and wrapper getNSepaRounds
+- Add SCIP function SCIPgetRowLinear and wrapper getRowLinear
+- Add SCIP function SCIProwIsInGlobalCutpool and wrapper isInGlobalCutpool
+- Add SCIP function SCIProwGetParallelism and wrapper getRowParallelism
+- Add getObjCoeff call to Column
+- Add isLocal call to Row
+- Add getNorm call to Row
+- Add getRowDualSol to Row
+- Add getDualSolVal to Model
+- added activeone parameter of addConsIndicator() allows to activate the constraint if the binary (indicator) variable is 1 or 0.
+- added function getSlackVarIndicator(), returns the slack variable of the indicator constraint.
+### Fixed
+- cmake / make install works from build directory
+### Changed
+### Removed
+
+## 4.0.0 - 2021-12-15
+### Added
+- many functions regarding the new cons expression logic and implementation
+### Fixed
+- fixed tests and github actions to fit the new SCIP version.
+### Changed
+- SCIP8 changes the way nonlinear constraints are handled inside SCIP. These changes have consequences for their respective PySCIPOpt wrappers and have changed regardingly. Please refer to the latest SCIP report for an in-depth explanation of these changes.
+- small changes to the documentation.
+### Removed
+- some of the deprecated functions that could not be made backwards compatible
 
 ## 3.5.0 - 2021-12-07
 ### Added
