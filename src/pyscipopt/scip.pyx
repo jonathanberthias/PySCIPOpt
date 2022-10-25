@@ -4074,7 +4074,7 @@ cdef class Model:
         return lperror, cutoff
 
     def solveDiveAnalyticCenterLP(self, face=True):
-        """solves the LP of the current dive using barrier method without corssover to the the analytic center.
+        """solves the LP of the current dive using barrier method without crossover to the the analytic center.
         Can get the analytic center of the LP or that of the optimal face of the LP (depending on parameter face).
         No separation or pricing is applied
         :param face: whether the LP solution to the optimal face should be returned
@@ -4086,6 +4086,26 @@ cdef class Model:
         sol = Solution.create(self._scip, _sol)
 
         return sol
+
+    def solveDiveBarrierLP(self, face=True):
+        """solves the LP of the current dive using barrier method without crossover to the the analytic center.
+        Can get the analytic center of the LP or that of the optimal face of the LP (depending on parameter face).
+        No separation or pricing is applied
+        :param face: whether the LP solution to the optimal face should be returned
+        """
+
+        initial_algorithm = self.getParam('lp/initalgorithm')
+        resolve_algorithm = self.getParam('lp/resolvealgorithm')
+
+        self.setParam('lp/initalgorithm', 'b')
+        self.setParam('lp/resolvealgorithm', 'b')
+
+        lperror, cutoff = self.solveDiveLP()
+
+        self.setParam('lp/initalgorithm', initial_algorithm)
+        self.setParam('lp/resolvealgorithm', resolve_algorithm)
+
+        return lperror, cutoff
 
 
     def inRepropagation(self):
