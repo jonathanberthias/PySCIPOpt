@@ -4100,6 +4100,11 @@ cdef class Model:
         self.setParam('lp/initalgorithm', 'b')
         self.setParam('lp/resolvealgorithm', 'b')
 
+        if not face:
+            t_vars = self.getVars(transformed=True)
+            for t_var in t_vars:
+                self.chgVarObjDive(t_var, 0)
+
         lperror, cutoff = self.solveDiveLP()
 
         self.setParam('lp/initalgorithm', initial_algorithm)
