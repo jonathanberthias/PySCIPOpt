@@ -52,14 +52,14 @@ environment = { SCIPOPTDIR="$(pwd)/scip", LD_LIBRARY_PATH="$(pwd)/scip/lib:$LD_L
 
 
 [tool.cibuildwheel.macos]
-skip="pp* cp36* cp37*"
+skip="pp* cp36* cp37* cp311* cp310* cp38*"
 before-all = '''
 #!/bin/bash
 brew install wget zlib gcc
 if [[ $CIBW_ARCHS == *"arm"* ]]; then
-    wget https://github.com/scipopt/scipoptsuite-deploy/releases/download/v0.3.0/libscip-macos-arm.zip -O scip.zip
+    wget https://github.com/scipopt/scipoptsuite-deploy/releases/download/v0.4.0/libscip-macos-arm.zip -O scip.zip
 else
-    wget https://github.com/scipopt/scipoptsuite-deploy/releases/download/v0.3.0/libscip-macos.zip -O scip.zip
+    wget https://github.com/scipopt/scipoptsuite-deploy/releases/download/v0.4.0/libscip-macos.zip -O scip.zip
 fi
 unzip scip.zip
 mv scip_install src/scip
