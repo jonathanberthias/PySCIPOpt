@@ -83,7 +83,8 @@ if not os.path.exists(os.path.join(packagedir, "scip.pyx")):
 
 ext = ".pyx" if use_cython else ".c"
 
-on_github_actions = os.getenv('GITHUB_ACTIONS') == 'true'
+# on_github_actions = os.getenv('GITHUB_ACTIONS') == 'true' # this is turned off to disbale linetracing on release builds
+on_github_actions = False
 
 extensions = [
     Extension(
