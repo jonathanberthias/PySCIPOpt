@@ -112,14 +112,14 @@ jobs:
 
       - name: Install PySCIPOpt
         run: |
-          export SCIPOPTDIR=${{ runner.workspace }}/scip/
-          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ runner.workspace }}/scip/lib
+          export SCIPOPTDIR=$(pwd)/scip/
+          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:$(pwd)/scip/lib
           python -m pip install .
 
       - name: Run pyscipopt tests
         run: |
-          export SCIPOPTDIR=${{ runner.workspace }}/scip/
-          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ runner.workspace }}/scip/lib
+          export SCIPOPTDIR=$(pwd)/scip/
+          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:$(pwd)/scip/lib
           py.test
 
   ### if you need valgrind on mac, you can install it via
