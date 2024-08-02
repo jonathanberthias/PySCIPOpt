@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['problem_20copies_20845',['Problem Copies',['https://scip.zib.de/doc/html/group__CopyMethods.php',1,'']]],
+  ['parallel_20interface_20methods_20846',['Parallel interface methods',['https://scip.zib.de/doc/html/group__PARALLEL.php',1,'']]],
+  ['parameter_20847',['Parameter',['https://scip.zib.de/doc/html/group__ParameterMethods.php',1,'']]],
+  ['permutations_20shuffling_20848',['Permutations Shuffling',['https://scip.zib.de/doc/html/group__PermutationsShuffling.php',1,'']]],
+  ['presolvers_20849',['Presolvers',['https://scip.zib.de/doc/html/group__PRESOLVERS.php',1,'']]],
+  ['pricers_20850',['Pricers',['https://scip.zib.de/doc/html/group__PRICERS.php',1,'']]],
+  ['primal_20heuristics_20851',['Primal Heuristics',['https://scip.zib.de/doc/html/group__PRIMALHEURISTICS.php',1,'']]],
+  ['priority_20queue_20852',['Priority Queue',['https://scip.zib.de/doc/html/group__PriorityQueue.php',1,'']]],
+  ['public_20api_20of_20scip_20853',['Public API of SCIP',['https://scip.zib.de/doc/html/group__PUBLICAPI.php',1,'']]],
+  ['problem_20constraints_20854',['Problem Constraints',['https://scip.zib.de/doc/html/group__PublicConstraintMethods.php',1,'']]],
+  ['primal_20heuristics_20855',['Primal Heuristics',['https://scip.zib.de/doc/html/group__PublicHeuristicMethods.php',1,'']]],
+  ['parallel_20interface_20856',['Parallel Interface',['https://scip.zib.de/doc/html/group__PublicParallelMethods.php',1,'']]],
+  ['plugin_20api_20of_20scip_20857',['Plugin API of SCIP',['https://scip.zib.de/doc/html/group__PUBLICPLUGINAPI.php',1,'']]],
+  ['presolver_20858',['Presolver',['https://scip.zib.de/doc/html/group__PublicPresolverMethods.php',1,'']]],
+  ['pricer_20859',['Pricer',['https://scip.zib.de/doc/html/group__PublicPricerMethods.php',1,'']]],
+  ['probing_20860',['Probing',['https://scip.zib.de/doc/html/group__PublicProbingMethods.php',1,'']]],
+  ['problem_20creation_20861',['Problem Creation',['https://scip.zib.de/doc/html/group__PublicProblemMethods.php',1,'']]],
+  ['propagators_20862',['Propagators',['https://scip.zib.de/doc/html/group__PublicPropagatorMethods.php',1,'(Global Namespace)'],['https://scip.zib.de/doc/html/group__PROPAGATORS.php',1,'(Global Namespace)']]],
+  ['primal_20solution_20863',['Primal Solution',['https://scip.zib.de/doc/html/group__PublicSolutionMethods.php',1,'']]],
+  ['publicsymmetrygraphmethods_20864',['PublicSymmetryGraphMethods',['https://scip.zib.de/doc/html/group__PublicSymmetryGraphMethods.php',1,'']]],
+  ['public_20variable_20graph_20methods_20865',['Public Variable Graph Methods',['https://scip.zib.de/doc/html/group__PublicVariableGraphMethods.php',1,'']]],
+  ['problem_20variables_20866',['Problem Variables',['https://scip.zib.de/doc/html/group__PublicVariableMethods.php',1,'']]]
+];

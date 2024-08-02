@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['data_20structures_20759',['Data Structures',['https://scip.zib.de/doc/html/group__DataStructures.php',1,'']]],
+  ['debug_20solution_20760',['Debug Solution',['https://scip.zib.de/doc/html/group__DebugSolutionMethods.php',1,'']]],
+  ['decomposition_20data_20structure_20761',['Decomposition data structure',['https://scip.zib.de/doc/html/group__DecompMethods.php',1,'']]],
+  ['default_20branching_20rules_20762',['Default branching rules',['https://scip.zib.de/doc/html/group__DEFPLUGINS__BRANCH.php',1,'']]],
+  ['default_20constraint_20handlers_20763',['Default constraint handlers',['https://scip.zib.de/doc/html/group__DEFPLUGINS__CONS.php',1,'']]],
+  ['default_20cut_20selectors_20764',['Default cut selectors',['https://scip.zib.de/doc/html/group__DEFPLUGINS__CUTSEL.php',1,'']]],
+  ['default_20display_20columns_20765',['Default display columns',['https://scip.zib.de/doc/html/group__DEFPLUGINS__DISP.php',1,'']]],
+  ['default_20event_20handlers_20766',['Default event handlers',['https://scip.zib.de/doc/html/group__DEFPLUGINS__EVENT.php',1,'']]],
+  ['default_20expression_20handlers_20767',['Default expression handlers',['https://scip.zib.de/doc/html/group__DEFPLUGINS__EXPR.php',1,'']]],
+  ['default_20expression_20interpreter_20768',['Default expression interpreter',['https://scip.zib.de/doc/html/group__DEFPLUGINS__EXPRINT.php',1,'']]],
+  ['default_20primal_20heuristics_20769',['Default Primal Heuristics',['https://scip.zib.de/doc/html/group__DEFPLUGINS__HEUR.php',1,'']]],
+  ['default_20nonlinear_20handlers_20770',['Default nonlinear handlers',['https://scip.zib.de/doc/html/group__DEFPLUGINS__NLHDLR.php',1,'']]],
+  ['default_20nlp_20solver_20interfaces_20771',['Default NLP solver interfaces',['https://scip.zib.de/doc/html/group__DEFPLUGINS__NLPI.php',1,'']]],
+  ['default_20node_20selectors_20772',['Default node selectors',['https://scip.zib.de/doc/html/group__DEFPLUGINS__NODESEL.php',1,'']]],
+  ['default_20presolvers_20773',['Default Presolvers',['https://scip.zib.de/doc/html/group__DEFPLUGINS__PRESOL.php',1,'']]],
+  ['default_20propagators_20774',['Default Propagators',['https://scip.zib.de/doc/html/group__DEFPLUGINS__PROP.php',1,'']]],
+  ['default_20readers_20775',['Default Readers',['https://scip.zib.de/doc/html/group__DEFPLUGINS__READER.php',1,'']]],
+  ['default_20separators_20776',['Default Separators',['https://scip.zib.de/doc/html/group__DEFPLUGINS__SEPA.php',1,'']]],
+  ['default_20tables_20777',['Default Tables',['https://scip.zib.de/doc/html/group__DEFPLUGINS__TABLE.php',1,'']]],
+  ['directed_20graph_20778',['Directed Graph',['https://scip.zib.de/doc/html/group__DirectedGraph.php',1,'']]],
+  ['disjoint_20set_20_28union_20find_29_20779',['Disjoint Set (Union Find)',['https://scip.zib.de/doc/html/group__DisjointSet.php',1,'']]],
+  ['dialogs_20780',['Dialogs',['https://scip.zib.de/doc/html/group__PublicDialogMethods.php',1,'(Global Namespace)'],['https://scip.zib.de/doc/html/group__DIALOGS.php',1,'(Global Namespace)']]],
+  ['displays_20781',['Displays',['https://scip.zib.de/doc/html/group__PublicDisplayMethods.php',1,'(Global Namespace)'],['https://scip.zib.de/doc/html/group__DISPLAYS.php',1,'(Global Namespace)']]],
+  ['dive_20sets_20782',['Dive sets',['https://scip.zib.de/doc/html/group__PublicDivesetMethods.php',1,'']]],
+  ['dynamic_20arrays_20783',['Dynamic Arrays',['https://scip.zib.de/doc/html/group__PublicDynamicArrayMethods.php',1,'']]]
+];
