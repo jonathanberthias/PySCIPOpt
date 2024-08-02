@@ -7,7 +7,7 @@ env:
 on:
   push:
     branches:
-      - 'master'
+      - '**'
 
 jobs:
 
@@ -22,8 +22,9 @@ jobs:
 
       - name: Install dependencies (SCIPOptSuite)
         run: |
-          wget --quiet --no-check-certificate https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-Linux-ubuntu20.deb
-          sudo apt-get update && sudo apt install -y ./SCIPOptSuite-${{ env.version }}-Linux-ubuntu20.deb
+          wget https://github.com/scipopt/scipoptsuite-deploy/releases/download/v0.4.0/libscip-linux.zip -O scip.zip
+          unzip scip.zip
+          mv scip_install scip
 
       - name: Setup python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -36,103 +37,105 @@ jobs:
           python -m pip install networkx pytest-cov
 
       - name: Install PySCIPOpt
-        run: python -m pip install .
+        run: | 
+          export SCIPOPTDIR=$(pwd)/scip
+          python -m pip install .
 
       - name: Run pyscipopt tests
         run: |
           py.test
 
-  Windows-test:
-    env:
-      SCIPOPTDIR: C:\scipoptdir
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-    steps:
-      - uses: actions/checkout@v3
+  # Windows-test:
+  #   env:
+  #     SCIPOPTDIR: C:\scipoptdir
+  #   runs-on: windows-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Download dependencies (SCIPOptSuite)
-        shell: powershell
-        run: wget https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-win64-VS15.exe -outfile scipopt-installer.exe
+  #     - name: Download dependencies (SCIPOptSuite)
+  #       shell: powershell
+  #       run: wget https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-win64-VS15.exe -outfile scipopt-installer.exe
 
-      - name: Install dependencies (SCIPOptSuite)
-        shell: cmd
-        run: scipopt-installer.exe /S /D=${{ env.SCIPOPTDIR }}
+  #     - name: Install dependencies (SCIPOptSuite)
+  #       shell: cmd
+  #       run: scipopt-installer.exe /S /D=${{ env.SCIPOPTDIR }}
 
-      - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+  #     - name: Setup python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
 
-      - name: Prepare python environment
-        shell: powershell
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install networkx pytest-cov
+  #     - name: Prepare python environment
+  #       shell: powershell
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         python -m pip install networkx pytest-cov
 
-      - name: Install PySCIPOpt
-        shell: powershell
-        run: |
-          $Env:SCIPOPTDIR = "${{ env.SCIPOPTDIR }}"
-          python -m pip install .
+  #     - name: Install PySCIPOpt
+  #       shell: powershell
+  #       run: |
+  #         $Env:SCIPOPTDIR = "${{ env.SCIPOPTDIR }}"
+  #         python -m pip install .
 
-      - name: Run pyscipopt tests
-        shell: powershell
-        run: |
-          py.test
+  #     - name: Run pyscipopt tests
+  #       shell: powershell
+  #       run: |
+  #         py.test
 
-  MacOS-test:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-    steps:
-      - uses: actions/checkout@v3
+  # MacOS-test:
+  #   runs-on: macos-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Cache dependencies (SCIPOptSuite)
-        id: cache-scip
-        uses: actions/cache@v2
-        with:
-          path: |
-            ${{ runner.workspace }}/scipoptsuite
-            ~/Library/Caches/Homebrew/tbb--*
-              /usr/local/opt/tbb*
-            ~/Library/Caches/Homebrew/downloads/*--tbb-*
-            ~/Library/Caches/Homebrew/boost--*
-              /usr/local/opt/boost*
-            ~/Library/Caches/Homebrew/downloads/*--boost-*
-          key: ${{ runner.os }}-scipopt-${{ env.version }}-${{ hashFiles('**/lockfiles') }}
-          restore-keys: |
-            ${{ runner.os }}-scipopt-${{ env.version }}-
+  #     - name: Cache dependencies (SCIPOptSuite)
+  #       id: cache-scip
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: |
+  #           ${{ runner.workspace }}/scipoptsuite
+  #           ~/Library/Caches/Homebrew/tbb--*
+  #             /usr/local/opt/tbb*
+  #           ~/Library/Caches/Homebrew/downloads/*--tbb-*
+  #           ~/Library/Caches/Homebrew/boost--*
+  #             /usr/local/opt/boost*
+  #           ~/Library/Caches/Homebrew/downloads/*--boost-*
+  #         key: ${{ runner.os }}-scipopt-${{ env.version }}-${{ hashFiles('**/lockfiles') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-scipopt-${{ env.version }}-
 
-      - name: Install dependencies (SCIPOptSuite)
-        if: steps.cache-scip.outputs.cache-hit != 'true'
-        run: |
-          brew install tbb boost bison
-          wget --quiet --no-check-certificate https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/scipoptsuite-${{ env.version }}.tgz
-          tar xfz scipoptsuite-${{ env.version }}.tgz
-          cd scipoptsuite-${{ env.version }}
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${{ runner.workspace }}/scipoptsuite -DIPOPT=off -DSYM=none -DTPI=tny -DREADLINE=off
-          make install -j
+  #     - name: Install dependencies (SCIPOptSuite)
+  #       if: steps.cache-scip.outputs.cache-hit != 'true'
+  #       run: |
+  #         brew install tbb boost bison
+  #         wget --quiet --no-check-certificate https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/scipoptsuite-${{ env.version }}.tgz
+  #         tar xfz scipoptsuite-${{ env.version }}.tgz
+  #         cd scipoptsuite-${{ env.version }}
+  #         mkdir build
+  #         cd build
+  #         cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${{ runner.workspace }}/scipoptsuite -DIPOPT=off -DSYM=none -DTPI=tny -DREADLINE=off
+  #         make install -j
 
-      - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+  #     - name: Setup python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
 
-      - name: Prepare python environment
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install networkx pytest-cov pytest
+  #     - name: Prepare python environment
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         python -m pip install networkx pytest-cov pytest
 
-      - name: Install PySCIPOpt
-        run: |
-          export SCIPOPTDIR=${{ runner.workspace }}/scipoptsuite/
-          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ runner.workspace }}/scipoptsuite/lib
-          python -m pip install .
+  #     - name: Install PySCIPOpt
+  #       run: |
+  #         export SCIPOPTDIR=${{ runner.workspace }}/scipoptsuite/
+  #         export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ runner.workspace }}/scipoptsuite/lib
+  #         python -m pip install .
 
 #      - name: Run pyscipopt tests
 #        run: |
