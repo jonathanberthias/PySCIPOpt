@@ -1,3 +1,4 @@
+import re
 from ._version import __version__
 
 # required for Python 3.8 on Windows
@@ -8,7 +9,7 @@ if hasattr(os, 'add_dll_directory'):
 
 # export user-relevant objects:
 from pyscipopt.Multidict import multidict
-from pyscipopt.scip      import Model
+from pyscipopt.scip      import Model as BaseModel
 from pyscipopt.scip      import Variable
 from pyscipopt.scip      import Constraint
 from pyscipopt.scip      import Benders
@@ -45,3 +46,21 @@ from pyscipopt.scip      import PY_SCIP_LPSOLSTAT    as SCIP_LPSOLSTAT
 from pyscipopt.scip      import PY_SCIP_BRANCHDIR    as SCIP_BRANCHDIR
 from pyscipopt.scip      import PY_SCIP_BENDERSENFOTYPE as SCIP_BENDERSENFOTYPE
 from pyscipopt.scip      import PY_SCIP_ROWORIGINTYPE as SCIP_ROWORIGINTYPE
+
+
+def camel_to_snake(name):
+    """Converts camelCase or PascalCase to snake_case."""
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+
+class Model(BaseModel):
+    def __init__(self, *args, **kwargs):
+        super(Model, self).__init__(*args, **kwargs)
+        self._add_snakecased_methods()
+
+    def _add_snakecased_methods(self):
+        for attr_name in dir(self.__class__):
+            attr = getattr(self.__class__, attr_name)
+            if callable(attr) and not attr_name.startswith('_'):
+                snake_case_name = camel_to_snake(attr_name)
+                setattr(self.__class__, snake_case_name, attr)
+        
