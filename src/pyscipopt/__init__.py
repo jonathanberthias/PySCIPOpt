@@ -63,4 +63,36 @@ class Model(BaseModel):
             if callable(attr) and not attr_name.startswith('_'):
                 snake_case_name = camel_to_snake(attr_name)
                 setattr(self.__class__, snake_case_name, attr)
+    
+    def attach_event_handler(self, callback, events, name="eventhdlr", description=""):
+        """Attach an event handler to the model.
+
+        Parameters
+        ----------
+        callback : callable
+            The callback function to be called when an event occurs. 
+            The callback function should have the following signature:
+            callback(model, eventhdlr, eventdata)
+        """
         
+        model = self
+        
+        class EventHandler(Eventhdlr):
+            def __init__(self, callback):
+                super(EventHandler, self).__init__()
+                self.callback = callback
+
+            def eventinit(self):
+                for event in events:
+                    self.model.catchEvent(event, self)
+                    
+            def eventexit(self):
+                for event in events:
+                    self.model.dropEvent(event, self)
+                
+            def eventexec(self, event):
+                self.callback(model, event)
+        
+        event_handler = EventHandler(callback)
+        
+        self.includeEventhdlr(event_handler, name, description)
