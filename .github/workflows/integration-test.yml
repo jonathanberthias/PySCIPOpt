@@ -1,127 +1,68 @@
 name: Integration test
 
 env:
-  version: 9.2.0
+  version: 9.2.1
 
-# runs on branches and pull requests; doesn't run on tags.
 on:
   push:
-    branches:
-      - 'master'
-
 
 jobs:
 
-  Integration-test:
-    runs-on: ubuntu-22.04
+  integration-test:
+    runs-on: ${{ matrix.runs-on }}
+    name: Python ${{ matrix.python-version }} on ${{ matrix.runs-on }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.12"]
+        runs-on: [macos-latest-large]  # ubuntu-22.04, windows-latest, 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Install dependencies (SCIPOptSuite)
-        run: |
-          wget --quiet --no-check-certificate https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-Linux-ubuntu20.deb
-          sudo apt-get update && sudo apt install -y ./SCIPOptSuite-${{ env.version }}-Linux-ubuntu20.deb
+      - uses: actions/checkout@v5
 
       - name: Setup python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Prepare python environment
+      - name: Install SCIPOptSuite (Linux)
+        if: runner.os == 'Linux'
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --group test
+          wget --quiet --no-check-certificate https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-Linux-ubuntu22.deb
+          sudo apt-get update && sudo apt install -y ./SCIPOptSuite-${{ env.version }}-Linux-ubuntu22.deb
 
-      - name: Install PySCIPOpt
-        run: python -m pip install .
-
-      - name: Run pyscipopt tests
-        run: |
-          py.test -nauto
-
-  Windows-test:
-    env:
-      SCIPOPTDIR: C:\scipoptdir
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Download dependencies (SCIPOptSuite)
+      - name: Install SCIPOptSuite (Windows)
+        if: runner.os == 'Windows'
         shell: powershell
-        run: wget https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-win64.exe -outfile scipopt-installer.exe
-
-      - name: Install dependencies (SCIPOptSuite)
-        shell: cmd
-        run: scipopt-installer.exe /S /D=${{ env.SCIPOPTDIR }}
-
-      - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Prepare python environment
-        shell: powershell
+        env:
+          SCIPOPTDIR: C:\scipoptdir
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --group test
+          $url = "https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-win64.exe"
+          Invoke-WebRequest -Uri $url -OutFile scipopt-installer.exe
+          Start-Process -FilePath .\scipopt-installer.exe -ArgumentList "/S", "/D=${{ env.SCIPOPTDIR }}" -Wait
+          Add-Content -Path $env:GITHUB_ENV -Value "SCIPOPTDIR=${{ env.SCIPOPTDIR }}"
 
-      - name: Install PySCIPOpt
-        shell: powershell
-        run: |
-          $Env:SCIPOPTDIR = "${{ env.SCIPOPTDIR }}"
-          python -m pip install .
-
-      - name: Run pyscipopt tests
-        shell: powershell
-        run: |
-          py.test -nauto
-
-  MacOS-test:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install dependencies (SCIPOptSuite)
+      - name: Install SCIPOptSuite (macOS)
+        if: runner.os == 'macOS'
         run: |
           brew install tbb boost bison
-          wget --quiet --no-check-certificate https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-Darwin.sh
+          curl -L -o SCIPOptSuite-${{ env.version }}-Darwin.sh https://github.com/scipopt/scip/releases/download/$(echo "v${{env.version}}" | tr -d '.')/SCIPOptSuite-${{ env.version }}-Darwin.sh
           chmod +x SCIPOptSuite-${{ env.version }}-Darwin.sh
           ./SCIPOptSuite-${{ env.version }}-Darwin.sh --skip-license --include-subdir
-          mv SCIPOptSuite-${{ env.version }}-Darwin ${{ runner.workspace }}/scipoptsuite
-
-      - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Prepare python environment
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install --group test
+          mv SCIPOptSuite-${{ env.version }}-Darwin ${{ github.workspace }}/scipoptsuite
+          echo "SCIPOPTDIR=${{ github.workspace }}/scipoptsuite/" >> $GITHUB_ENV
+          echo "DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ github.workspace }}/scipoptsuite/lib" >> $GITHUB_ENV
 
       - name: Install PySCIPOpt
         run: |
-          export SCIPOPTDIR=${{ runner.workspace }}/scipoptsuite/
-          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ runner.workspace }}/scipoptsuite/lib
+          python -m pip install --upgrade pip
           python -m pip install .
 
-#      - name: Run pyscipopt tests
-#        run: |
-#          export SCIPOPTDIR=${{ runner.workspace }}/scipoptsuite/
-#          export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${{ runner.workspace }}/scipoptsuite/lib
-#          py.test
+      - name: Install test dependencies
+        run: |
+          python -m pip install --group test
 
-  ### if you need valgrind on mac, you can install it via
-  # brew tap LouisBrunner/valgrind
-  # brew install --HEAD LouisBrunner/valgrind/valgrind
-
+      - name: Run pyscipopt tests
+        env:
+          SCIPOPTDIR: ${{ env.SCIPOPTDIR }}
+          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}
+        run: pytest -nauto
