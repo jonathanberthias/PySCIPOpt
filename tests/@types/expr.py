@@ -61,7 +61,7 @@ assert_type(array2d, numpy.ndarray)
 
 assert_type(-var, pyscipopt.scip.Expr)
 assert_type(abs(var), pyscipopt.scip.UnaryExpr)
-assert_type(pyscipopt.exp(var), pyscipopt.scip.UnaryExpr)
+assert_type(pyscipopt.exp(var), pyscipopt.scip.BinaryExpr)
 assert_type(pyscipopt.log(var), pyscipopt.scip.UnaryExpr)
 assert_type(pyscipopt.sqrt(var), pyscipopt.scip.UnaryExpr)
 assert_type(pyscipopt.sin(var), pyscipopt.scip.UnaryExpr)
