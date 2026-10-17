@@ -36,6 +36,11 @@ def main():
     source_tree = ast.parse(source.read_text())
     installed_tree = ast.parse(installed.read_text())
 
+    if sys.version_info < (3, 10):
+        assert source.read_bytes() == installed.read_bytes()
+        print("Python <3.10: wheel contains the unchanged source stub")
+        return
+
     for owner, name in [
         ("Model", "addVar"),
         ("Model", "addCons"),

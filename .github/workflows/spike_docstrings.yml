@@ -11,21 +11,23 @@ permissions:
 jobs:
   wheel:
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [cp39, cp310, cp314]
     steps:
       - uses: actions/checkout@v4
-      - name: Build and check one wheel
+      - name: Build and check wheel
         uses: pypa/cibuildwheel@v4.3.0
         env:
           CIBW_ARCHS: x86_64
-          CIBW_BUILD: cp314-manylinux_x86_64
-          CIBW_BEFORE_BUILD: >-
-            python -m pip install wheel numpy
-            git+https://github.com/astral-sh/docstring-adder@8377e23ca0c1533bef3e744209709d6d783782b6
+          CIBW_BUILD: ${{ matrix.python }}-manylinux_x86_64
+          CIBW_BEFORE_BUILD: python {project}/scripts/add_wheel_docstrings.py --install
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >-
             auditwheel repair -w {dest_dir} {wheel} &&
             python {project}/scripts/add_wheel_docstrings.py {dest_dir}
           CIBW_TEST_COMMAND: python {project}/scripts/check_wheel_docstrings.py {project}
       - uses: actions/upload-artifact@v4
         with:
-          name: docstring-wheel
+          name: docstring-wheel-${{ matrix.python }}
           path: wheelhouse/*.whl

@@ -1,4 +1,8 @@
-"""Spike: inject docstrings into repaired wheels without editing the source stubs."""
+"""Spike: install the docstring tool or inject docs into repaired wheels.
+
+Use --install in before-build; pass the repaired wheel directory during repair.
+Both steps skip Python <3.10, which docstring-adder no longer supports.
+"""
 
 import os
 import subprocess
@@ -8,6 +12,25 @@ from tempfile import TemporaryDirectory
 
 
 def main():
+    if sys.version_info < (3, 10):
+        print("Skipping wheel docstrings: docstring-adder requires Python >=3.10")
+        return
+
+    if sys.argv[1] == "--install":
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "wheel",
+                "numpy",
+                "git+https://github.com/astral-sh/docstring-adder@8377e23ca0c1533bef3e744209709d6d783782b6",
+            ],
+            check=True,
+        )
+        return
+
     wheel_dir = Path(sys.argv[1]).resolve()
     wheels = sorted(wheel_dir.glob("*.whl"))
     if not wheels:
