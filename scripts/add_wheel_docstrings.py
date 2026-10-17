@@ -31,7 +31,11 @@ def main():
             (package_root,) = unpack_dir.iterdir()
             # Import this wheel's extension, including its repaired shared libraries.
             # A fresh process avoids loading another installed copy of PySCIPOpt.
-            env = dict(os.environ, PYTHONPATH=str(package_root))
+            env = dict(
+                os.environ,
+                PYTHONPATH=str(package_root),
+                PYTHONDONTWRITEBYTECODE="1",
+            )
             subprocess.run(
                 [
                     sys.executable,
