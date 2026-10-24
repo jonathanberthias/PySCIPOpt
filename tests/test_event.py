@@ -81,6 +81,7 @@ class MyEvent(Eventhdlr):
             self.model.dropEvent(self.event_type, self)
 
     def eventexec(self, event):
+        assert isinstance(event.getType(), SCIP_EVENTTYPE)
         assert str(event) == event.getName()
         assert type(event.getName()) == str
 
