@@ -126,12 +126,7 @@ class MyEvent(Eventhdlr):
 
 def test_event():
 
-    all_events = {}
-    for attr_name in dir(SCIP_EVENTTYPE):
-        if not attr_name.startswith('_'):
-            attr = getattr(SCIP_EVENTTYPE, attr_name)
-            if isinstance(attr, int):
-                all_events[attr_name] = attr
+    all_events = SCIP_EVENTTYPE.__members__
     
     all_event_hdlrs = []
     for event_name, event in all_events.items():

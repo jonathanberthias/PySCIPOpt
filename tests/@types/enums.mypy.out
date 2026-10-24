@@ -1,0 +1,5 @@
+tests/@types/enums.py:53: error: Argument 2 to "configure" has incompatible type "int"; expected "PY_SCIP_PARAMSETTING"  [arg-type]
+tests/@types/enums.py:54: error: Argument 2 to "configure" has incompatible type "PY_SCIP_RESULT"; expected "PY_SCIP_PARAMSETTING"  [arg-type]
+tests/@types/enums.py:55: error: Argument 1 to "setPresolve" of "Model" has incompatible type "int"; expected "PY_SCIP_PARAMSETTING"  [arg-type]
+tests/@types/enums.py:56: error: Argument 1 to "setPresolve" of "Model" has incompatible type "PY_SCIP_RESULT"; expected "PY_SCIP_PARAMSETTING"  [arg-type]
+tests/@types/enums.py:63: error: Argument 1 to "catchEvent" of "Model" has incompatible type "PY_SCIP_PARAMSETTING"; expected "PY_SCIP_EVENTTYPE"  [arg-type]
