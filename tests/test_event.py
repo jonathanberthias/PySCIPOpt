@@ -127,14 +127,12 @@ class MyEvent(Eventhdlr):
 
 def test_event():
 
-    all_events = SCIP_EVENTTYPE.__members__
-    
     all_event_hdlrs = []
-    for event_name, event in all_events.items():
+    for event_name, event in SCIP_EVENTTYPE.__members__.items():
         s = Model()
         s.hideOutput()
         all_event_hdlrs.append(MyEvent())
-        all_event_hdlrs[-1].event_type = all_events[event_name]
+        all_event_hdlrs[-1].event_type = event
         s.includeEventhdlr(all_event_hdlrs[-1], str(event), "python event handler to catch %s" % str(event_name))
 
         x = {}
